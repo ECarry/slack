@@ -1,0 +1,1 @@
+type SignInFlow = "signIn" | "signUp";
