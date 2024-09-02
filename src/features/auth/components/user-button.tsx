@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCurrentUser } from "../api/use-current-user";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader, LogOut } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 
 const UserButton = () => {
@@ -18,7 +18,7 @@ const UserButton = () => {
   const { data, isLoading } = useCurrentUser();
 
   if (isLoading) {
-    return <Loader2 className="size-8 animate-spin" />;
+    return <Loader className="size-6 animate-spin text-muted-foreground" />;
   }
   if (!data) return null;
 

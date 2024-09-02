@@ -9,22 +9,31 @@ import { useCreateWorkspaceModal } from "../store/use-create-workspace-modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateWorkspace } from "../api/use-create-workspace";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const CreateWorkspaceModal = () => {
+  const [name, setName] = useState<string>("");
+  const router = useRouter();
   const [open, setOpen] = useCreateWorkspaceModal();
-  const { mutate } = useCreateWorkspace();
+  const { mutate, isPending } = useCreateWorkspace();
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     mutate(
+      { name },
       {
-        name: "Workspace 1",
-      },
-      {
-        onSuccess(data) {},
+        onSuccess: (data) => {
+          toast.success("Workspace has been created.");
+          router.push(`/workspace/${data}`);
+          handleClose();
+        },
       }
     );
   };
@@ -34,19 +43,20 @@ const CreateWorkspaceModal = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add a workspace</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={onSubmit}>
           <Input
-            disabled={false}
-            value={""}
-            onChange={() => {}}
+            disabled={isPending}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             autoFocus
             minLength={3}
             required
             placeholder="Workspace name e.g. 'Work', 'Personal' 'Home'"
           />
           <div className="flex justify-end">
-            <Button>Add</Button>
+            <Button disabled={isPending}>Add</Button>
           </div>
         </form>
       </DialogContent>
