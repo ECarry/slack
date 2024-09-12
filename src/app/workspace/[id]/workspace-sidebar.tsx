@@ -1,20 +1,37 @@
 import { useWorkspaceId } from "@/app/hooks/use-workspace-id";
 import { useCurrentMember } from "@/features/members/api/use-get-member";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
-import { AlertTriangle, Loader } from "lucide-react";
+import {
+  AlertTriangle,
+  Hash,
+  Loader,
+  MessageSquareText,
+  SendHorizonal,
+} from "lucide-react";
 import WorkspaceHeader from "./workspace-header";
+import SidebarItem from "./sidebar-item";
+import { useGetChannels } from "@/features/channels/api/use-get-channels";
+import WorkspaceSection from "./workspace-section";
+import { useGetMembers } from "@/features/members/api/use-get-members";
+import UserItem from "./user-item";
 
 const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId();
 
-  const { data: member, isLoading: membersIsLoading } = useCurrentMember({
+  const { data: member, isLoading: memberIsLoading } = useCurrentMember({
     workspaceId,
   });
   const { data: workspace, isLoading: workspaceIsLoading } = useGetWorkspace({
     id: workspaceId,
   });
+  const { data: channels, isLoading: channelsIsLoading } = useGetChannels({
+    workspaceId,
+  });
+  const { data: members, isLoading: membersIsLoading } = useGetMembers({
+    workspaceId,
+  });
 
-  if (membersIsLoading || workspaceIsLoading)
+  if (memberIsLoading || workspaceIsLoading)
     return (
       <div className="flex flex-col bg-[#5E2C5F] h-full items-center justify-center">
         <Loader className="size-5 animate-spin text-white" />
@@ -35,6 +52,34 @@ const WorkspaceSidebar = () => {
         workspace={workspace}
         isAdmin={member.role === "admin"}
       />
+      <div className="flex flex-col px-2 mt-3">
+        <SidebarItem label="Threads" icon={MessageSquareText} id="threads" />
+        <SidebarItem label="Drafts & Sent" icon={SendHorizonal} id="Drafts" />
+      </div>
+      <WorkspaceSection label="Channels" hint="New channels" onNew={() => {}}>
+        {channels?.map((item) => (
+          <SidebarItem
+            key={item._id}
+            label={item.name}
+            icon={Hash}
+            id={item.name}
+          />
+        ))}
+      </WorkspaceSection>
+      <WorkspaceSection
+        label="Direct Messages"
+        hint="Invite people"
+        onNew={() => {}}
+      >
+        {members?.map((item) => (
+          <UserItem
+            key={item._id}
+            id={item.user._id}
+            image={item.user.image}
+            label={item.user.name}
+          />
+        ))}
+      </WorkspaceSection>
     </div>
   );
 };
