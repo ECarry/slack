@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IconType } from "react-icons";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 const sidebarItemVariants = cva(
   "flex items-center gap-1.5 justify-start font-normal h-7 px-[18px] text-sm overflow-hidden",

@@ -69,7 +69,7 @@ const WorkspaceSidebar = () => {
             key={item._id}
             label={item.name}
             icon={Hash}
-            id={item.name}
+            id={item._id}
           />
         ))}
       </WorkspaceSection>
