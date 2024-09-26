@@ -1,10 +1,5 @@
 import { GetMessagesReturnType } from "@/features/messages/api/use-get-messages";
-import {
-  differenceInMilliseconds,
-  format,
-  isToday,
-  isYesterday,
-} from "date-fns";
+import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 import Message from "./message";
 
 const TIME_THRESHOLD = 5;
@@ -64,10 +59,11 @@ const MessageList = ({
           </div>
           {messages.map((message, index) => {
             const prevMessage = messages[index - 1];
+
             const isCompact =
               prevMessage &&
               prevMessage.user?._id === message.user?._id &&
-              differenceInMilliseconds(
+              differenceInMinutes(
                 new Date(message._creationTime),
                 new Date(prevMessage._creationTime)
               ) < TIME_THRESHOLD;
