@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Hint from "./hint";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Thumbnail from "./thumbnail";
+import Toolbar from "./toolbar";
 
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
 
@@ -109,6 +110,17 @@ const Message = ({
           ) : null}
         </div>
       </div>
+      {!isEditing && (
+        <Toolbar
+          isAuthor={isAuthor}
+          isPending={false}
+          handleEdit={() => setEditingId(id)}
+          handleThread={() => {}}
+          handleDelete={() => {}}
+          handleReaction={(value: string) => {}}
+          hideThreadButton={hideThreadButton}
+        />
+      )}
     </div>
   );
 };
