@@ -1,15 +1,20 @@
-import { format, isToday, isYesterday } from "date-fns";
-import { Doc, Id } from "../../convex/_generated/dataModel";
 import dynamic from "next/dynamic";
-import Hint from "./hint";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import Thumbnail from "./thumbnail";
-import Toolbar from "./toolbar";
-import { useUpdateMessage } from "@/features/messages/api/use-update-message";
+import { Doc, Id } from "../../convex/_generated/dataModel";
+
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
+import { format, isToday, isYesterday } from "date-fns";
+
+import Hint from "./hint";
+import Toolbar from "./toolbar";
+import Thumbnail from "./thumbnail";
 import { useConfirm } from "@/app/hooks/use-confirm";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
+import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
+import { useUpdateMessage } from "@/features/messages/api/use-update-message";
+import { useToggleReaction } from "@/features/reactions/api/use-toggle-reaction";
+import Reactions from "./reactions";
 
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
@@ -68,8 +73,24 @@ const Message = ({
   );
   const { mutate: updateMessage, isPending: isUpdating } = useUpdateMessage();
   const { mutate: removeMessage, isPending: isRemoving } = useRemoveMessage();
+  const { mutate: toggleReaction, isPending: isTogglingReaction } =
+    useToggleReaction();
 
   const isPending = isUpdating || isRemoving;
+
+  const handleToggleReaction = (value: string) => {
+    toggleReaction(
+      { messageId: id, value },
+      {
+        onSuccess: () => {
+          toast.success("Reaction toggled");
+        },
+        onError: () => {
+          toast.error("Failed to toggle reaction");
+        },
+      }
+    );
+  };
 
   const handleUpdateMessage = ({ body }: { body: string }) => {
     updateMessage(
@@ -141,6 +162,7 @@ const Message = ({
                     (edited)
                   </span>
                 ) : null}
+                <Reactions data={reactions} onChange={handleToggleReaction} />
               </div>
             )}
           </div>
@@ -151,7 +173,7 @@ const Message = ({
               handleEdit={() => setEditingId(id)}
               handleThread={() => {}}
               handleDelete={handleRemoveMessage}
-              handleReaction={(value: string) => {}}
+              handleReaction={handleToggleReaction}
               hideThreadButton={hideThreadButton}
             />
           )}
@@ -212,6 +234,7 @@ const Message = ({
               {updatedAt ? (
                 <span className="text-xs text-muted-foreground">(edited)</span>
               ) : null}
+              <Reactions data={reactions} onChange={handleToggleReaction} />
             </div>
           )}
         </div>
@@ -222,7 +245,7 @@ const Message = ({
             handleEdit={() => setEditingId(id)}
             handleThread={() => {}}
             handleDelete={handleRemoveMessage}
-            handleReaction={(value: string) => {}}
+            handleReaction={handleToggleReaction}
             hideThreadButton={hideThreadButton}
           />
         )}
